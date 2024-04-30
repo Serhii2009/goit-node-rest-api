@@ -1,50 +1,70 @@
-import express from "express";
+import express from 'express'
 
-import { validateBody } from "../middlewares/validateBody.js";
-import { authenticate } from "../middlewares/authenticate.js";
-import { upload } from "../middlewares/upload.js";
-import { cntrlWrapper } from "../helpers/cntrlWrapper.js";
+import { validateBody } from '../middlewares/validateBody.js'
+import { authenticate } from '../middlewares/authenticate.js'
+import { upload } from '../middlewares/upload.js'
+import { cntrlWrapper } from '../helpers/cntrlWrapper.js'
 
 import {
   registerSchema,
   loginSchema,
   subscriptionSchema,
-} from "../schemas/userSchemas.js";
+  EmailVerifySchema,
+  passwordSchema,
+} from '../schemas/userSchemas.js'
 import {
   register,
+  verifyEmail,
+  resendVerifyEmail,
   login,
   getCurrent,
   logout,
   updateSubscription,
   updateAvatar,
-} from "../controllers/authControllers.js";
+  checkAndUpdatePassword,
+} from '../controllers/authControllers.js'
 
-const authRouter = express.Router();
+const authRouter = express.Router()
 
 authRouter.post(
-  "/register",
+  '/register',
   validateBody(registerSchema),
   cntrlWrapper(register)
-);
+)
 
-authRouter.post("/login", validateBody(loginSchema), cntrlWrapper(login));
+authRouter.get('/verify/:verificationToken', cntrlWrapper(verifyEmail))
 
-authRouter.get("/current", authenticate, cntrlWrapper(getCurrent));
+authRouter.post(
+  '/verify',
+  validateBody(EmailVerifySchema),
+  cntrlWrapper(resendVerifyEmail)
+)
 
-authRouter.post("/logout", authenticate, cntrlWrapper(logout));
+authRouter.post('/login', validateBody(loginSchema), cntrlWrapper(login))
+
+authRouter.get('/current', authenticate, cntrlWrapper(getCurrent))
+
+authRouter.post('/logout', authenticate, cntrlWrapper(logout))
 
 authRouter.patch(
-  "/",
+  '/',
   authenticate,
   validateBody(subscriptionSchema),
   cntrlWrapper(updateSubscription)
-);
+)
 
 authRouter.patch(
-  "/avatars",
+  '/avatars',
   authenticate,
-  upload.single("avatar"),
+  upload.single('avatar'),
   cntrlWrapper(updateAvatar)
-);
+)
 
-export default authRouter;
+authRouter.patch(
+  '/password',
+  authenticate,
+  validateBody(passwordSchema),
+  cntrlWrapper(checkAndUpdatePassword)
+)
+
+export default authRouter
