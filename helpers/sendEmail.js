@@ -6,7 +6,7 @@ import { convert } from 'html-to-text'
 
 dotenv.config()
 
-const { META_PASSWORD } = process.env
+const { UKR_PASSWORD } = process.env
 
 const config = {
   host: 'smtp.ukr.net',
@@ -14,7 +14,7 @@ const config = {
   secure: true,
   auth: {
     user: 'serikkravchenko@ukr.net',
-    pass: META_PASSWORD,
+    pass: UKR_PASSWORD,
   },
 }
 
